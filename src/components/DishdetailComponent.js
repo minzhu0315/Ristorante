@@ -20,7 +20,7 @@ function RenderDish({dish}) {
     }
 }
 
-function RenderComments({comments}) {
+function RenderComments({comments, addComment, dishId}) {
     if (comments != null) {
         const cmts = comments.map((comment) => {
             return (
@@ -47,7 +47,7 @@ function RenderComments({comments}) {
 const maxLength = (len) => val => !(val) || (val.length <= len);
 const minLength = (len) => val => (val) && (val.length >= len);
 
-class DishDetail extends Component {
+class CommentForm extends Component {
 
     constructor(props) {
         super(props);
@@ -56,6 +56,7 @@ class DishDetail extends Component {
             isModalOpen: false,
         }
         this.toggleModal = this.toggleModal.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     toggleModal() {
@@ -66,34 +67,16 @@ class DishDetail extends Component {
     }
 
     handleSubmit(values) {
-        console.log("Current State is: " + JSON.stringify(values));
-        alert("Current State is: " + JSON.stringify(values));
+        this.toggleModal();
+        this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
     }
 
     render() {
         return (
-            <div className="container">
-                <div className="row">
-                    <Breadcrumb>
-                        <BreadcrumbItem><Link to='/menu'>Menu</Link></BreadcrumbItem>
-                        <BreadcrumbItem active>{this.props.dish.name}</BreadcrumbItem>
-                    </Breadcrumb>
-                    <div className="col-12">
-                        <h3>{this.props.dish.name}</h3>
-                        <hr />
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-12 col-md-5 m-1">
-                        <RenderDish dish={this.props.dish} />
-                    </div>
-                    <div className="col-12 col-md-5 m-1">
-                        <RenderComments comments={this.props.comments} />
-                        <Button outline onClick={this.toggleModal}>
-                            <span className=""></span> Submit Comment
-                        </Button>
-                    </div>
-                </div>
+            <div>
+                <Button outline onClick={this.toggleModal}>
+                    <span className=""></span> Submit Comment
+                </Button>
                 <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
                     <ModalHeader>Submit Comment</ModalHeader>
                     <ModalBody>
@@ -152,8 +135,41 @@ class DishDetail extends Component {
                     </ModalBody>
                 </Modal>
             </div>
-        );
+        )
     }
+}
+
+const DishDetail = (props) => {
+
+    console.log(props)
+
+        return (
+            <div className="container">
+                <div className="row">
+                    <Breadcrumb>
+                        <BreadcrumbItem><Link to='/menu'>Menu</Link></BreadcrumbItem>
+                        <BreadcrumbItem active>{props.dish.name}</BreadcrumbItem>
+                    </Breadcrumb>
+                    <div className="col-12">
+                        <h3>{props.dish.name}</h3>
+                        <hr />
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-12 col-md-5 m-1">
+                        <RenderDish dish={props.dish} />
+                    </div>
+                    <div className="col-12 col-md-5 m-1">
+                        <RenderComments comments={props.comments} 
+                            addComment={props.addComment}
+                            dishId={props.dish.id} />
+                        <CommentForm dishId ={props.dish.id} addComment = {props.addComment} />
+                    </div>
+                    
+                </div>
+            </div>
+        );
+
 }
 
     
